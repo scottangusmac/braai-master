@@ -3685,7 +3685,8 @@ function beginHost(code) {
 async function connectHost(code) {
   try {
     const n = await createNet(code, true);
-    if (netCode !== code) { n.close(); return; }
+    if (netCode !== code) { n.close && n.close(); return; }
+    if (n.error) throw n;
     net = n; netReady = true; bindHostNet(n);
     updateInvite();
     toast("Online. Friends can join with your link.");
@@ -3708,7 +3709,8 @@ async function joinOnline(code) {
   showJoining(code); updateInvite();
   try {
     const n = await createNet(code, false);
-    if (!netCode) { n.close(); return; }
+    if (!netCode) { n.close && n.close(); return; }
+    if (n.error) throw n;
     net = n; netReady = true; bindGuestNet(n);
     localId = n.id; myId = n.id; predReady = false;
     $("joinTitle").textContent = "Waiting for the braai…";
@@ -3733,7 +3735,7 @@ async function joinOnline(code) {
       toast("Online unavailable — solo braai");
     } else {
       startSolo();
-      toast("Couldn't join — solo braai it is");
+      toast("Couldn't reach #" + code + " (" + (err || "error") + ") — solo braai it is");
     }
   }
 }
